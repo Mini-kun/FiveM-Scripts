@@ -1,8 +1,3 @@
-# FiveM-Scripts
-Compilation of my publicly released code
+Main Coder is: Rubbertoe98
 
-Feel free to make improvements with PRs
-
-
-My personal dev discord
-https://discord.gg/dnZTpUh
+ReCoded For the use of RelaxedRP: Mini-Kun

@@ -26,12 +26,6 @@ local takeHostage = {
 	}
 }
 
-local function drawNativeNotification(text)
-    SetTextComponentFormat("STRING")
-    AddTextComponentString(text)
-    DisplayHelpTextFromStringLabel(0, 0, 1, -1)
-end
-
 local function GetClosestPlayer(radius)
     local players = GetActivePlayers()
     local closestDistance = -1
@@ -82,6 +76,11 @@ RegisterCommand("th",function()
 end)
 
 function callTakeHostage()
+	if not takeHostage.InProgress and exports['RelaxedRP-safecafe']:IsInNeedsZone() then
+		TriggerEvent('QBCore:Notify', "You cannot take a hostage inside the SafeCafe NeedsZone!", "error")
+		return
+	end
+
 	ClearPedSecondaryTask(PlayerPedId())
 	DetachEntity(PlayerPedId(), true, false)
 
@@ -97,7 +96,7 @@ function callTakeHostage()
 	end
 
 	if not canTakeHostage then 
-		drawNativeNotification("You need a pistol with ammo to take a hostage at gunpoint!")
+		TriggerEvent('QBCore:Notify', "You need a pistol with ammo to take a hostage at gunpoint!", "error")
 	end
 
 	if not takeHostage.InProgress and canTakeHostage then			
@@ -112,10 +111,10 @@ function callTakeHostage()
 				ensureAnimDict(takeHostage.agressor.animDict)
 				takeHostage.type = "agressor"
 			else
-				drawNativeNotification("~r~No one nearby to take as hostage!")
+				TriggerEvent('QBCore:Notify', "No one nearby to take as hostage!", "error")
 			end
 		else
-			drawNativeNotification("~r~No one nearby to take as hostage!")
+			TriggerEvent('QBCore:Notify', "No one nearby to take as hostage!", "error")
 		end
 	end
 end 

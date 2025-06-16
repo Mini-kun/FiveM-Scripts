@@ -1,4 +1,3 @@
-
 local carry = {
 	InProgress = false,
 	targetSrc = -1,
@@ -17,12 +16,6 @@ local carry = {
 		flag = 33,
 	}
 }
-
-local function drawNativeNotification(text)
-    SetTextComponentFormat("STRING")
-    AddTextComponentString(text)
-    DisplayHelpTextFromStringLabel(0, 0, 1, -1)
-end
 
 local function GetClosestPlayer(radius)
     local players = GetActivePlayers()
@@ -59,40 +52,50 @@ local function ensureAnimDict(animDict)
     return animDict
 end
 
-RegisterCommand("carry",function(source, args)
-	if not carry.InProgress then
-		local closestPlayer = GetClosestPlayer(3)
-		if closestPlayer then
-			local targetSrc = GetPlayerServerId(closestPlayer)
-			if targetSrc ~= -1 then
-				carry.InProgress = true
-				carry.targetSrc = targetSrc
-				TriggerServerEvent("CarryPeople:sync",targetSrc)
-				ensureAnimDict(carry.personCarrying.animDict)
-				carry.type = "carrying"
-			else
-				drawNativeNotification("~r~No one nearby to carry!")
-			end
-		else
-			drawNativeNotification("~r~No one nearby to carry!")
-		end
-	else
-		carry.InProgress = false
-		ClearPedSecondaryTask(PlayerPedId())
-		DetachEntity(PlayerPedId(), true, false)
-		TriggerServerEvent("CarryPeople:stop",carry.targetSrc)
-		carry.targetSrc = 0
-	end
-end,false)
+RegisterCommand("carry", function(source, args)
+    if not carry.InProgress and exports['RelaxedRP-safecafe']:IsInNeedsZone() then
+        TriggerEvent('QBCore:Notify', "You cannot carry people inside the SafeCafe NeedsZone!", "error")
+        return
+    end
+
+    if not carry.InProgress then
+        local closestPlayer = GetClosestPlayer(3)
+        if closestPlayer then
+            local targetSrc = GetPlayerServerId(closestPlayer)
+            if targetSrc ~= -1 then
+                carry.InProgress = true
+                carry.targetSrc = targetSrc
+                TriggerServerEvent("CarryPeople:sync", targetSrc)
+                ensureAnimDict(carry.personCarrying.animDict)
+                carry.type = "carrying"
+            else
+                TriggerEvent('QBCore:Notify', "No one nearby to carry!", "error")
+            end
+        else
+            TriggerEvent('QBCore:Notify', "No one nearby to carry!", "error")
+        end
+    else
+        carry.InProgress = false
+        ClearPedSecondaryTask(PlayerPedId())
+        DetachEntity(PlayerPedId(), true, false)
+        TriggerServerEvent("CarryPeople:stop", carry.targetSrc)
+        carry.targetSrc = 0
+    end
+end, false)
+
+
+
 
 RegisterNetEvent("CarryPeople:syncTarget")
 AddEventHandler("CarryPeople:syncTarget", function(targetSrc)
+	-- Existing logic below
 	local targetPed = GetPlayerPed(GetPlayerFromServerId(targetSrc))
 	carry.InProgress = true
 	ensureAnimDict(carry.personCarried.animDict)
 	AttachEntityToEntity(PlayerPedId(), targetPed, 0, carry.personCarried.attachX, carry.personCarried.attachY, carry.personCarried.attachZ, 0.5, 0.5, 180, false, false, false, false, 2, false)
 	carry.type = "beingcarried"
 end)
+
 
 RegisterNetEvent("CarryPeople:cl_stop")
 AddEventHandler("CarryPeople:cl_stop", function()

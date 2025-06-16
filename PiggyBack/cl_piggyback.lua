@@ -18,12 +18,6 @@ local piggyback = {
 	}
 }
 
-local function drawNativeNotification(text)
-    SetTextComponentFormat("STRING")
-    AddTextComponentString(text)
-    DisplayHelpTextFromStringLabel(0, 0, 1, -1)
-end
-
 local function GetClosestPlayer(radius)
     local players = GetActivePlayers()
     local closestDistance = -1
@@ -60,6 +54,10 @@ local function ensureAnimDict(animDict)
 end
 
 RegisterCommand("piggyback",function(source, args)
+    if not piggyback.InProgress and exports['RelaxedRP-safecafe']:IsInNeedsZone() then
+        TriggerEvent('QBCore:Notify', "You cannot piggyback someone inside the SafeCafe NeedsZone!", "error")
+        return
+    end
 	if not piggyback.InProgress then
 		local closestPlayer = GetClosestPlayer(3)
 		if closestPlayer then
@@ -71,10 +69,10 @@ RegisterCommand("piggyback",function(source, args)
 				ensureAnimDict(piggyback.personPiggybacking.animDict)
 				piggyback.type = "piggybacking"
 			else
-				drawNativeNotification("~r~No one nearby to piggyback!")
+				TriggerEvent('QBCore:Notify', "No one nearby to piggyback!", "error")
 			end
 		else
-			drawNativeNotification("~r~No one nearby to piggyback!")
+			TriggerEvent('QBCore:Notify', "No one nearby to piggyback!", "error")
 		end
 	else
 		piggyback.InProgress = false
