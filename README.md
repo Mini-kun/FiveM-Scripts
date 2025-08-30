@@ -31,12 +31,6 @@ This resource pack is a fork of the original work by RubberToe98, with modificat
 
 ---
 
-### `RelaxedRP-safecafe`
-- **Description**: Defines SafeZone logic, with default zones like cafés, medical tents, or resting areas.
-- **Use Case**: Prevents combat, aggression, and harmful interactions within peaceful RP locations.
-- **Integrations**: Core system for SafeZone and NeedsZone behaviors.
-- **Customizable**: Add/remove zones easily via config.
-
 ---
 
 ### `TakeHostage`
@@ -51,7 +45,6 @@ This resource pack is a fork of the original work by RubberToe98, with modificat
 1. Clone this repository into your server's `resources/` directory.
 2. Add the resources to your `server.cfg` in this order:
    ```plaintext
-   ensure RelaxedRP-safecafe
    ensure CarryPeople
    ensure PiggyBack
    ensure TakeHostage
